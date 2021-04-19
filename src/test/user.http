@@ -1,0 +1,28 @@
+@api=http://localhost:5000/api/user
+
+###
+GET  {{api}}/
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwMDYwMzM1MDciLCJyb2xlIjoxLCJpYXQiOjE2MTg4MTYwMDZ9.urjxXxz8p1H_I8cioqVM6t-98If0Lm6SKhZodbNvkJE
+
+###
+PUT {{api}}/
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwMDYwMzM1MDciLCJyb2xlIjoxLCJpYXQiOjE2MTg4MTYwMDZ9.urjxXxz8p1H_I8cioqVM6t-98If0Lm6SKhZodbNvkJE
+Content-Type: application/json
+
+{
+    "name": "matteo zuluaga",
+    "doc_type": "tajeta de identidad",
+    "doc_num": 1006033507,
+    "phone_num": 3182292856,
+    "birth": "2000-11-08",
+    "role": 1,
+    "email": "matteo@zulu.com",
+    "password": "admin123",
+    "latitude": 1.4353,
+    "longitude": -1.042,
+    "address": "cl 34 # 83c-72"
+}
+
+###
+DELETE {{api}}/
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwMDYwMzM1MDciLCJyb2xlIjoxLCJpYXQiOjE2MTg4MTYwMDZ9.urjxXxz8p1H_I8cioqVM6t-98If0Lm6SKhZodbNvkJE

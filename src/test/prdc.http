@@ -1,0 +1,20 @@
+@api=http://localhost:5000/api/product
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwMDYwMzM1MDciLCJyb2xlIjoxLCJpYXQiOjE2MTg4MTYwMDZ9.urjxXxz8p1H_I8cioqVM6t-98If0Lm6SKhZodbNvkJE
+
+GET {{api}}/
+
+###
+POST {{api}}/
+Authorization: {{token}}
+Content-Type: multipart/form-data
+
+{
+    "name": "Nuggets",
+    "image": apple.jpg,
+    "description": "Mera chimba",
+    "iva": 19,
+    "datails": "Ganoso de comerme eso",
+    "category_id": 1,
+    "units": 8,
+    "unit_price": 3000
+}

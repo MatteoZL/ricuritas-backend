@@ -1,0 +1,46 @@
+@api=http://localhost:5000/api/order
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwMDYwMzM1MDciLCJyb2xlIjoxLCJpYXQiOjE2MTg4MTYwMDZ9.urjxXxz8p1H_I8cioqVM6t-98If0Lm6SKhZodbNvkJE
+
+# Obtener todas las órdenes
+GET {{api}}/
+Authorization: {{token}}
+
+###
+POST {{api}}/
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+    "nit": 123,
+	"restaurant_id": 1,
+	"user_id": 31889470,
+	"products_list": [
+		{"name": "apple", 
+		 "quantity": 1, 
+		 "uprice": 3000, 
+		 "amount": 3000},
+		{"name": "applepen", 
+		 "quantity": 2, 
+		 "uprice": 1000, 
+		 "amount": 2000},
+		{"name": "blanket", 
+		 "quantity": 10, 
+		 "uprice": 300, 
+		 "amount": 3000}
+	],
+	"subtotal": 2000,
+	"iva": 39,
+	"total": 2039,
+	"method": "tarjeta",
+	"entity": "visa",
+	"quotas": 12,
+	"card_num": 1334
+}
+
+###
+GET {{api}}/1
+Authorization: {{token}}
+
+###
+GET  {{api}}/restaurant/1
+Authorization: {{token}}

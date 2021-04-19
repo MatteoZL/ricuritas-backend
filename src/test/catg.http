@@ -1,0 +1,31 @@
+@api=http://localhost:5000/api/category
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwMDYwMzM1MDciLCJyb2xlIjoxLCJpYXQiOjE2MTg4MTYwMDZ9.urjxXxz8p1H_I8cioqVM6t-98If0Lm6SKhZodbNvkJE
+
+# Obtener todas las categorías
+GET {{api}}/
+
+###
+POST {{api}}/
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+    "name": "Asado"
+}
+
+###
+PUT  {{api}}/1
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+    "name": "Apanado"
+}
+
+###
+DELETE {{api}}/1
+Authorization: {{token}}
+
+### Obtener una única categoría
+GET {{api}}/2
+Authorization: {{token}}

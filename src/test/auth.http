@@ -1,0 +1,28 @@
+@api=http://localhost:5000/api/auth
+
+### Estas peticiones retornan un atributo Authorization en los headers, éste se usa para permitir (o no) el acceso a otras rutas
+post  {{api}}/signup
+content-type: application/json
+
+{
+    "name": "matteo zuluaga",
+    "doc_type": "tajeta de identidad",
+    "doc_num": 1006033507,
+    "phone_num": 3182292856,
+    "birth": "2004-11-08",
+    "role": 1,
+    "email": "matteo@zulu.com",
+    "password": "admin123",
+    "latitude": 1.4353,
+    "longitude": -1.042,
+    "address": "cl 34 # 83c-72"
+}
+
+###
+post {{api}}/signin
+content-type: application/json
+
+{
+    "email": "matteo@zulu.com",
+    "password": "c0m3"
+}
