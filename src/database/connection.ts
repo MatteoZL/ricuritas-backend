@@ -6,7 +6,16 @@ export const db = new Sequelize(
   "fa9fd456d22298918137a83316ddadb3fa40f4e41637adf04633e71e339036b7", //"password", 
   {
     host: "ec2-18-215-111-67.compute-1.amazonaws.com",//"localhost",
+    port: 5432,
     dialect: "postgres",
+    //native: true,
+    ssl: true,
+    dialectOptions: {
+      ssl: {
+	require: true,
+	rejectUnauthorized: false
+      }
+    },
     pool: {
      max: 5,
      min: 0,
