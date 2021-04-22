@@ -97,6 +97,22 @@ export const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
+export const allUsers = async (req: Request, res: Response) => {
+  try {
+    const users: any= await User.findAll({ order: ["name"] });
+    for (let user of users) {
+      let location = await readLocation(user.getDataValue("location_id"));
+      user.dataValues.location = location;
+    }
+    res.status(200).json({users});
+  } catch (error) {
+    res.status(500).json({
+      msg: "Comunicarse con Matteo",
+      error,
+    });
+  }
+};
+
 export const searchByEmail = async (email: string) => {
   const user = await User.findOne({
     where: {

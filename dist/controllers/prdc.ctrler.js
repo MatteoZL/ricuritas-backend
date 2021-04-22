@@ -16,6 +16,7 @@ exports.searchByCategory = exports.allProducts = exports.deleteProduct = exports
 const Promotion_1 = __importDefault(require("../models/Promotion"));
 const cloudinary_1 = require("../libs/cloudinary");
 const Product_1 = __importDefault(require("../models/Product"));
+const Category_1 = __importDefault(require("../models/Category"));
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { body, files } = req;
@@ -103,10 +104,12 @@ const allProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const products = yield Product_1.default.findAll({ order: ["name"] });
         for (let product of products) {
+            let category = yield Category_1.default.findByPk(product.getDataValue("category_id"));
+            product.dataValues.category_name = category === null || category === void 0 ? void 0 : category.getDataValue("name");
             let promotion = yield checkPromos(product.getDataValue("promotion"));
             product.setDataValue("promotion", promotion);
         }
-        res.status(200).json(products);
+        res.status(200).json({ products });
     }
     catch (error) {
         res.status(500).json({

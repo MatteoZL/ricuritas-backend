@@ -3,6 +3,7 @@ import { UploadedFile } from "express-fileupload";
 import Promotion from "../models/Promotion";
 import { deleteImage, uploadImage } from "../libs/cloudinary";
 import Product from "../models/Product";
+import Category from "../models/Category";
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
@@ -86,12 +87,14 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
 export const allProducts = async (req: Request, res: Response) => {
   try {
-    const products = await Product.findAll({ order: ["name"] });
+    const products: any = await Product.findAll({ order: ["name"] });
     for (let product of products) {
+      let category = await Category.findByPk(product.getDataValue("category_id"));
+      product.dataValues.category_name = category?.getDataValue("name");
       let promotion = await checkPromos(product.getDataValue("promotion"));
       product.setDataValue("promotion", promotion);
     }
-    res.status(200).json(products);
+    res.status(200).json({products});
   } catch (error) {
     res.status(500).json({
       msg: "Comunicarse con Matteo",

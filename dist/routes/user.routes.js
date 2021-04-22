@@ -6,5 +6,6 @@ const verifyToken_1 = require("../libs/verifyToken");
 const router = express_1.Router();
 router.use(verifyToken_1.TokenValidation);
 router.route("/").get(user_ctrler_1.readUser).put(user_ctrler_1.updateUser).delete(user_ctrler_1.deleteUser);
+router.get("/allUsers", user_ctrler_1.allUsers);
 exports.default = router;
 //# sourceMappingURL=user.routes.js.map

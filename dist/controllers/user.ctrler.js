@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchByEmail = exports.deleteUser = exports.updateUser = exports.readUser = exports.createUser = void 0;
+exports.searchByEmail = exports.allUsers = exports.deleteUser = exports.updateUser = exports.readUser = exports.createUser = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const loc_ctrler_1 = require("./loc.ctrler");
 const bcrypt_1 = require("../libs/bcrypt");
@@ -109,6 +109,23 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deleteUser = deleteUser;
+const allUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield User_1.default.findAll({ order: ["name"] });
+        for (let user of users) {
+            let location = yield loc_ctrler_1.readLocation(user.getDataValue("location_id"));
+            user.dataValues.location = location;
+        }
+        res.status(200).json({ users });
+    }
+    catch (error) {
+        res.status(500).json({
+            msg: "Comunicarse con Matteo",
+            error,
+        });
+    }
+});
+exports.allUsers = allUsers;
 const searchByEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield User_1.default.findOne({
         where: {
