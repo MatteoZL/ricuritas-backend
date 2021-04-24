@@ -13,7 +13,7 @@ export const signup = async (req: Request, res: Response) => {
       { id: savedUser.doc_num, role: savedUser.role },
       process.env.TOKEN_SECRET || "token-test"
     );
-    res.header("Authorization", token).json(savedUser);
+    res.status(200).json({Authorization: token, savedUser});
   } catch (error) {
     // Custom error
     if (error.custMsg) return res.status(400).json({ msg: error.custMsg });
@@ -42,7 +42,7 @@ export const signin = async (req: Request, res: Response) => {
       { id: user.doc_num, role: user.role },
       process.env.TOKEN_SECRET || "token-test"
     );
-    res.header("Authorization", token).json(user);
+    res.status(200).json({Authorization: token, user});
   } catch (error) {
     res.status(500).json({
       msg: "Comunicarse con Matteo",
