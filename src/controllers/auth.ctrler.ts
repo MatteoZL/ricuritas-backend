@@ -13,7 +13,11 @@ export const signup = async (req: Request, res: Response) => {
       { id: user.doc_num, role: user.role },
       process.env.TOKEN_SECRET || "token-test"
     );
+<<<<<<< HEAD
     res.status(200).json({Authorization: token, user});
+=======
+    res.status(200).json({Authorization: token, savedUser});
+>>>>>>> eeea7548caa5cfbb25cc6e8e92acae0432bdefe2
   } catch (error) {
     // Custom error
     if (error.custMsg) return res.status(400).json({ msg: error.custMsg });
