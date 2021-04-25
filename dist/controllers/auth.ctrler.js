@@ -20,10 +20,10 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Saving new User
         const { body } = req;
-        const savedUser = yield user_ctrler_1.createUser(body);
+        const user = yield user_ctrler_1.createUser(body);
         // Token
-        const token = jsonwebtoken_1.default.sign({ id: savedUser.doc_num, role: savedUser.role }, process.env.TOKEN_SECRET || "token-test");
-        res.header("Authorization", token).json(savedUser);
+        const token = jsonwebtoken_1.default.sign({ id: user.doc_num, role: user.role }, process.env.TOKEN_SECRET || "token-test");
+        res.status(200).json({ Authorization: token, user });
     }
     catch (error) {
         // Custom error
@@ -49,7 +49,7 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res.status(400).json({ msg: "Contraseña incorrecta" });
         // Token
         const token = jsonwebtoken_1.default.sign({ id: user.doc_num, role: user.role }, process.env.TOKEN_SECRET || "token-test");
-        res.header("Authorization", token).json(user);
+        res.status(200).json({ Authorization: token, user });
     }
     catch (error) {
         res.status(500).json({
