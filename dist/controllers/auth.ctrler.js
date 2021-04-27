@@ -49,11 +49,7 @@ const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res.status(400).json({ msg: "Contraseña incorrecta" });
         // Token
         const token = jsonwebtoken_1.default.sign({ id: user.doc_num, role: user.role }, process.env.TOKEN_SECRET || "token-test");
-<<<<<<< HEAD
         res.status(200).json({ Authorization: token, user });
-=======
-        res.status(200).json({Authorization: token, user});
->>>>>>> eeea7548caa5cfbb25cc6e8e92acae0432bdefe2
     }
     catch (error) {
         res.status(500).json({
