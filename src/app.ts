@@ -19,9 +19,6 @@ app.use(fileUpload({ useTempFiles: true }));
 import index from './routes/index.routes';
 app.use('/api', index);
 
-
-module.exports = app;
-
 export default function createServer() {
   app.listen(app.get("port"), () => {
     console.log("Server on port", app.get("port"));
