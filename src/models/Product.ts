@@ -32,10 +32,6 @@ const Product = db.define(
       allowNull: true,
       type: DataTypes.INTEGER,
     },
-    units: {
-      allowNull: false,
-      type: DataTypes.INTEGER,
-    },
     unit_price: {
       allowNull: false,
       type: DataTypes.NUMBER,

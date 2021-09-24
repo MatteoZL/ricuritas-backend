@@ -1,3 +1,4 @@
+// @ts-ignore
 import pdf from "pdf-creator-node";
 import fs from "fs-extra";
 import { uploadImage } from "./cloudinary";

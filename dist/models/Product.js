@@ -31,10 +31,6 @@ const Product = connection_1.db.define("product", {
         allowNull: true,
         type: sequelize_1.DataTypes.INTEGER,
     },
-    units: {
-        allowNull: false,
-        type: sequelize_1.DataTypes.INTEGER,
-    },
     unit_price: {
         allowNull: false,
         type: sequelize_1.DataTypes.NUMBER,

@@ -11,5 +11,7 @@ router
     .put(verifyToken_1.AdminValidation, prdc_ctrler_1.updateProduct)
     .delete(verifyToken_1.AdminValidation, prdc_ctrler_1.deleteProduct);
 router.get("/category/:id", prdc_ctrler_1.searchByCategory);
+router.get("/restaurant/:id", prdc_ctrler_1.searchByRestaurant);
+router.get("/:id_product/restaurant/:id_restaurant", prdc_ctrler_1.readProductByRestaurant);
 exports.default = router;
 //# sourceMappingURL=prdc.routes.js.map
