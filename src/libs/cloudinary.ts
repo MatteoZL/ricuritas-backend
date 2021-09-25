@@ -12,7 +12,6 @@ export const uploadImage = async (file: string): Promise<string> => {
     const res = await cloudinary.v2.uploader.upload(file, {
       folder: "ricuritas",
     });
-    console.log(res);
     return res.secure_url;
   } catch (error) {
     throw error;
