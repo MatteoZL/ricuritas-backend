@@ -110,14 +110,14 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (!product)
             return res.status(404).json({ msg: `Producto no encontrado` });
         yield product.update(body);
-        let inventory = yield Inventory_1.default.findOne({
+        let inventory = id_restaurant ? yield Inventory_1.default.findOne({
             where: { product_id: id, restaurant_id: id_restaurant },
-        });
+        }) : null;
         if (inventory) {
             inventory === null || inventory === void 0 ? void 0 : inventory.setDataValue("units", body.units);
             inventory === null || inventory === void 0 ? void 0 : inventory.save();
         }
-        else {
+        else if (id_restaurant) {
             Inventory_1.default.create({
                 product_id: id,
                 restaurant_id: id_restaurant,

@@ -92,13 +92,13 @@ export const updateProduct = async (req: Request, res: Response) => {
     if (!product)
       return res.status(404).json({ msg: `Producto no encontrado` });
     await product.update(body);
-    let inventory = await Inventory.findOne({
+    let inventory = id_restaurant? await Inventory.findOne({
       where: { product_id: id, restaurant_id: id_restaurant },
-    });
+    }) : null;
     if (inventory) {
       inventory?.setDataValue("units", body.units);
       inventory?.save();
-    } else {
+    } else if (id_restaurant) {
       Inventory.create({
         product_id: id,
         restaurant_id: id_restaurant,

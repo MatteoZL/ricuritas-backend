@@ -40,7 +40,7 @@ export const createUser = async (data: any) => {
 
 export const readUser = async (req: Request, res: Response) => {
   try {
-    const id = req.userId;
+    const id = req.params.id? req.params.id : req.userId;
     const user: any = await User.findByPk(id);
     const location: any = await readLocation(user?.getDataValue("location_id"));
     !user
@@ -58,7 +58,6 @@ export const readUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const id = req.userId;
     const { body } = req;
     const user: any = await User.findByPk(id);
     if (!user)
@@ -85,7 +84,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const id = req.userId;
+    const id = req.params.id? req.params.id : req.userId;
     // Logical deletion
     await User.update({ available: false }, { where: { doc_num: id } });
     res.status(200).json({ msg: "Borrado exitoso" });

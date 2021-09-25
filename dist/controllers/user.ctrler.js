@@ -49,7 +49,7 @@ const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
 exports.createUser = createUser;
 const readUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const id = req.userId;
+        const id = req.params.id ? req.params.id : req.userId;
         const user = yield User_1.default.findByPk(id);
         const location = yield loc_ctrler_1.readLocation(user === null || user === void 0 ? void 0 : user.getDataValue("location_id"));
         !user
@@ -68,7 +68,6 @@ const readUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.readUser = readUser;
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const id = req.userId;
         const { body } = req;
         const user = yield User_1.default.findByPk(id);
         if (!user)
@@ -96,7 +95,7 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.updateUser = updateUser;
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const id = req.userId;
+        const id = req.params.id ? req.params.id : req.userId;
         // Logical deletion
         yield User_1.default.update({ available: false }, { where: { doc_num: id } });
         res.status(200).json({ msg: "Borrado exitoso" });
