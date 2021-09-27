@@ -68,6 +68,7 @@ const readUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.readUser = readUser;
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const id = req.params.id ? req.params.id : req.userId;
         const { body } = req;
         const user = yield User_1.default.findByPk(id);
         if (!user)

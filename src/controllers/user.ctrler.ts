@@ -58,6 +58,7 @@ export const readUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
+    const id = req.params.id? req.params.id : req.userId;
     const { body } = req;
     const user: any = await User.findByPk(id);
     if (!user)
