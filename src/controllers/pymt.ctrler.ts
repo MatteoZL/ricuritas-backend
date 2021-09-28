@@ -20,6 +20,7 @@ export const readPayment = async (id: string) => {
       "apvl_num",
       "apvl_date",
       "entity",
+      "receipt"
     ],
     where: {
       order_id: id,

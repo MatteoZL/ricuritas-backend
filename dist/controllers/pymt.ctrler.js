@@ -34,6 +34,7 @@ const readPayment = (id) => __awaiter(void 0, void 0, void 0, function* () {
             "apvl_num",
             "apvl_date",
             "entity",
+            "receipt"
         ],
         where: {
             order_id: id,

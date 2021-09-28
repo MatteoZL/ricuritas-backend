@@ -29,3 +29,6 @@ export async function connectDB() {
   db.authenticate();
   console.log("Database is connected");
 }
+
+// Conect to the database in a terminal:
+// psql -h ec2-18-215-111-67.compute-1.amazonaws.com -U tyqljyhijyqfyi d4bjg5tms14g14
