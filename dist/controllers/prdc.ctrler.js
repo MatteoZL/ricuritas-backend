@@ -52,9 +52,9 @@ exports.createProduct = createProduct;
 // User route, don't show units
 const readProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id } = req.params;
+        const { id_product } = req.params;
         // Searching the product
-        const product = yield Product_1.default.findByPk(id);
+        const product = yield Product_1.default.findByPk(id_product);
         if (!product)
             res.status(404).json({ msg: `Producto no encontrado` });
         // Looking for a promotion
@@ -72,7 +72,7 @@ const readProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.readProduct = readProduct;
 const readProductByRestaurant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id_restaurant, id_product } = req.params;
+        const { id_product, id_restaurant } = req.params;
         // Searching the product
         const product = yield Product_1.default.findByPk(id_product);
         if (!product)
@@ -97,7 +97,7 @@ const readProductByRestaurant = (req, res) => __awaiter(void 0, void 0, void 0, 
 exports.readProductByRestaurant = readProductByRestaurant;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id, id_restaurant } = req.params;
+        const { id_product, id_restaurant } = req.params;
         const { body, files } = req;
         if (body.promotion == "")
             body.promotion = null;
@@ -106,12 +106,12 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             const image = files.image;
             body.image = yield cloudinary_1.uploadImage(image.tempFilePath);
         }
-        const product = yield Product_1.default.findByPk(id);
+        const product = yield Product_1.default.findByPk(id_product);
         if (!product)
             return res.status(404).json({ msg: `Producto no encontrado` });
         yield product.update(body);
         let inventory = id_restaurant ? yield Inventory_1.default.findOne({
-            where: { product_id: id, restaurant_id: id_restaurant },
+            where: { product_id: id_product, restaurant_id: id_restaurant },
         }) : null;
         if (inventory) {
             inventory === null || inventory === void 0 ? void 0 : inventory.setDataValue("units", body.units);
@@ -119,7 +119,7 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         else if (id_restaurant) {
             Inventory_1.default.create({
-                product_id: id,
+                product_id: id_product,
                 restaurant_id: id_restaurant,
                 units: body.units,
             });
@@ -137,10 +137,10 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.updateProduct = updateProduct;
 const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id } = req.params;
+        const { id_product } = req.params;
         yield Product_1.default.update({
             available: false,
-        }, { where: { id } });
+        }, { where: { id: id_product } });
         //await deleteImage();
         res.status(200).json({ msg: "Borrado exitoso" });
     }
@@ -175,10 +175,10 @@ exports.allProducts = allProducts;
 // User route, don't show units
 const searchByCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id } = req.params;
+        const { id_category } = req.params;
         const products = yield Product_1.default.findAll({
             where: {
-                category_id: id,
+                category_id: id_category,
             },
             order: ["name"],
         });
@@ -198,13 +198,13 @@ const searchByCategory = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.searchByCategory = searchByCategory;
 const searchByRestaurant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id } = req.params;
+        const { id_restaurant } = req.params;
         const products = yield Product_1.default.findAll({ order: ["name"] });
         for (let product of products) {
             let promotion = yield checkPromos(product.getDataValue("promotion"));
             product.setDataValue("promotion", promotion);
             let inventory = yield Inventory_1.default.findOne({
-                where: { product_id: product.getDataValue("id"), restaurant_id: id },
+                where: { product_id: product.getDataValue("id"), restaurant_id: id_restaurant },
             });
             product.dataValues.units = inventory ? inventory.getDataValue("units") : 0;
         }
@@ -220,10 +220,10 @@ const searchByRestaurant = (req, res) => __awaiter(void 0, void 0, void 0, funct
 exports.searchByRestaurant = searchByRestaurant;
 const searchByRestaurantCategory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { product_id, restaurant_id, category_id } = req.params;
+        const { id_restaurant, id_category } = req.params;
         const products = yield Product_1.default.findAll({
             where: {
-                category_id,
+                category_id: id_category,
             },
             order: ["name"],
         });
@@ -231,7 +231,7 @@ const searchByRestaurantCategory = (req, res) => __awaiter(void 0, void 0, void 
             let promotion = yield checkPromos(product.getDataValue("promotion"));
             product.setDataValue("promotion", promotion);
             let inventory = yield Inventory_1.default.findOne({
-                where: { product_id: product.getDataValue("id"), restaurant_id },
+                where: { product_id: product.getDataValue("id"), restaurant_id: id_restaurant },
             });
             product.dataValues.units = inventory ? inventory.getDataValue("units") : 0;
         }

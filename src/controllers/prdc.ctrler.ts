@@ -39,9 +39,9 @@ export const createProduct = async (req: Request, res: Response) => {
 // User route, don't show units
 export const readProduct = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id_product } = req.params;
     // Searching the product
-    const product = await Product.findByPk(id);
+    const product = await Product.findByPk(id_product);
     if (!product) res.status(404).json({ msg: `Producto no encontrado` });
     // Looking for a promotion
     const promotion = await checkPromos(product?.getDataValue("promotion"));
@@ -57,7 +57,7 @@ export const readProduct = async (req: Request, res: Response) => {
 
 export const readProductByRestaurant = async (req: Request, res: Response) => {
   try {
-    const { id_restaurant, id_product } = req.params;
+    const { id_product, id_restaurant } = req.params;
     // Searching the product
     const product: any = await Product.findByPk(id_product);
     if (!product) res.status(404).json({ msg: `Producto no encontrado` });
@@ -80,7 +80,7 @@ export const readProductByRestaurant = async (req: Request, res: Response) => {
 
 export const updateProduct = async (req: Request, res: Response) => {
   try {
-    const { id, id_restaurant } = req.params;
+    const { id_product, id_restaurant } = req.params;
     const { body, files } = req;
     if (body.promotion == "") body.promotion = null;
     if (files) {
@@ -88,19 +88,19 @@ export const updateProduct = async (req: Request, res: Response) => {
       const image = files!.image as UploadedFile;
       body.image = await uploadImage(image.tempFilePath);
     }
-    const product: any = await Product.findByPk(id);
+    const product: any = await Product.findByPk(id_product);
     if (!product)
       return res.status(404).json({ msg: `Producto no encontrado` });
     await product.update(body);
     let inventory = id_restaurant? await Inventory.findOne({
-      where: { product_id: id, restaurant_id: id_restaurant },
+      where: { product_id: id_product, restaurant_id: id_restaurant },
     }) : null;
     if (inventory) {
       inventory?.setDataValue("units", body.units);
       inventory?.save();
     } else if (id_restaurant) {
       Inventory.create({
-        product_id: id,
+        product_id: id_product,
         restaurant_id: id_restaurant,
         units: body.units,
       });
@@ -117,12 +117,12 @@ export const updateProduct = async (req: Request, res: Response) => {
 
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id_product } = req.params;
     await Product.update(
       {
         available: false,
       },
-      { where: { id } }
+      { where: { id: id_product } }
     );
     //await deleteImage();
     res.status(200).json({ msg: "Borrado exitoso" });
@@ -158,10 +158,10 @@ export const allProducts = async (req: Request, res: Response) => {
 // User route, don't show units
 export const searchByCategory = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id_category } = req.params;
     const products = await Product.findAll({
       where: {
-        category_id: id,
+        category_id: id_category,
       },
       order: ["name"],
     });
@@ -180,13 +180,13 @@ export const searchByCategory = async (req: Request, res: Response) => {
 
 export const searchByRestaurant = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id_restaurant } = req.params;
     const products: any = await Product.findAll({ order: ["name"] });
     for (let product of products) {
       let promotion = await checkPromos(product.getDataValue("promotion"));
       product.setDataValue("promotion", promotion);
       let inventory = await Inventory.findOne({
-        where: { product_id: product.getDataValue("id"), restaurant_id: id },
+        where: { product_id: product.getDataValue("id"), restaurant_id: id_restaurant },
       });
       product.dataValues.units = inventory? inventory.getDataValue("units") : 0;
     }
@@ -201,10 +201,10 @@ export const searchByRestaurant = async (req: Request, res: Response) => {
 
 export const searchByRestaurantCategory = async (req: Request, res: Response) => {
   try {
-    const { product_id, restaurant_id, category_id } = req.params;
+    const { id_restaurant, id_category } = req.params;
     const products: any = await Product.findAll({
       where: {
-        category_id,
+        category_id: id_category,
       },
       order: ["name"],
     });
@@ -212,7 +212,7 @@ export const searchByRestaurantCategory = async (req: Request, res: Response) =>
       let promotion = await checkPromos(product.getDataValue("promotion"));
       product.setDataValue("promotion", promotion);
       let inventory = await Inventory.findOne({
-        where: { product_id: product.getDataValue("id"), restaurant_id },
+        where: { product_id: product.getDataValue("id"), restaurant_id: id_restaurant },
       });
       product.dataValues.units = inventory? inventory.getDataValue("units") : 0;
     }

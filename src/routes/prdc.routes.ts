@@ -17,23 +17,23 @@ const router: Router = Router();
 router.route("/").post(AdminValidation, createProduct).get(allProducts);
 
 router
-  .route("/:id")
+  .route("/:id_product")
   .get(readProduct)
   .put(AdminValidation, updateProduct)
   .delete(AdminValidation, deleteProduct);
 
-router.get("/category/:id", searchByCategory);
+router.get("/category/:id_category", searchByCategory);
 
-router.get("/restaurant/:id", searchByRestaurant);
+router.get("/restaurant/:id_restaurant", searchByRestaurant);
 
 router
-  .route("/:id/restaurant/:id_restaurant")
+  .route("/:id_product/restaurant/:id_restaurant")
   .get(readProductByRestaurant)
   .put(AdminValidation, updateProduct)
   .delete(AdminValidation, deleteProduct);
 
 router.get(
-  "/:product_id/restaurant/:restaurant_id/category/:category_id",
+  "/restaurant/:id_restaurant/category/:id_category",
   searchByRestaurantCategory
 );
 
