@@ -20,7 +20,7 @@ export const createUser = async (data: any) => {
     // Saving new User
     const user = await User.create(data);
     return user;
-  } catch (error) {
+  } catch (error: any) {
     // Delete the previously created location
     await deleteLocation(data.location_id);
     // Error handling
