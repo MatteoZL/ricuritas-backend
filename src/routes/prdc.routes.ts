@@ -8,6 +8,7 @@ import {
   updateProduct,
   readProductByRestaurant,
   searchByRestaurantCategory,
+  dailyProduct,
 } from "../controllers/prdc.ctrler";
 import { Router } from "express";
 import { AdminValidation } from "../libs/verifyToken";
@@ -36,5 +37,7 @@ router.get(
   "/restaurant/:id_restaurant/category/:id_category",
   searchByRestaurantCategory
 );
+
+router.get("/daily", dailyProduct)
 
 export default router;

@@ -5,6 +5,7 @@ import {
   readLocation,
   updateLocation,
 } from "../controllers/loc.ctrler";
+import { Op } from "sequelize";
 
 export const createRestaurant = async (req: Request, res: Response) => {
   try {
@@ -28,17 +29,34 @@ export const createRestaurant = async (req: Request, res: Response) => {
 };
 
 export const readRestaurant = async (req: Request, res: Response) => {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
-    const restaurant: any = await Restaurant.findByPk(id);
-    const location: any = await readLocation(
-      restaurant?.getDataValue("location_id")
-    );
-    !restaurant
-      ? res.status(400).json({ msg: `Sede restaurante no encontrada` })
-      : res
-          .status(200)
-          .json(Object.assign(restaurant.dataValues, location.dataValues));
+    if (id == "open") {
+      let now: number = new Date().getHours();
+      const restaurants: any = await Restaurant.findAll({
+        where: {
+          open_time: { [Op.lt]: now },
+          close_time: { [Op.gte]: now },
+        },
+      });
+      for (let restaurant of restaurants) {
+        const location: any = await readLocation(
+          restaurant?.getDataValue("location_id")
+        );
+        restaurant.dataValues.location = location;
+      }
+      res.status(200).json(restaurants);
+    } else {
+      const restaurant: any = await Restaurant.findByPk(id);
+      const location: any = await readLocation(
+        restaurant?.getDataValue("location_id")
+      );
+      !restaurant
+        ? res.status(400).json({ msg: `Sede restaurante no encontrada` })
+        : res
+            .status(200)
+            .json(Object.assign(restaurant.dataValues, location.dataValues));
+    }
   } catch (error) {
     res.status(500).json({
       msg: "Comunicarse con Matteo",

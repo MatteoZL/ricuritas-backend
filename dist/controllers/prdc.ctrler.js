@@ -12,13 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchByRestaurantCategory = exports.searchByRestaurant = exports.searchByCategory = exports.allProducts = exports.deleteProduct = exports.updateProduct = exports.readProductByRestaurant = exports.readProduct = exports.createProduct = void 0;
+exports.dailyProduct = exports.searchByRestaurantCategory = exports.searchByRestaurant = exports.searchByCategory = exports.allProducts = exports.deleteProduct = exports.updateProduct = exports.readProductByRestaurant = exports.readProduct = exports.createProduct = void 0;
 const Promotion_1 = __importDefault(require("../models/Promotion"));
 const cloudinary_1 = require("../libs/cloudinary");
 const Product_1 = __importDefault(require("../models/Product"));
 const Category_1 = __importDefault(require("../models/Category"));
 const Inventory_1 = __importDefault(require("../models/Inventory"));
 const Restaurant_1 = __importDefault(require("../models/Restaurant"));
+const connection_1 = require("../database/connection");
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { body, files } = req;
@@ -51,16 +52,22 @@ const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.createProduct = createProduct;
 // User route, don't show units
 const readProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id_product } = req.params;
     try {
-        const { id_product } = req.params;
-        // Searching the product
-        const product = yield Product_1.default.findByPk(id_product);
-        if (!product)
-            res.status(404).json({ msg: `Producto no encontrado` });
-        // Looking for a promotion
-        const promotion = yield checkPromos(product === null || product === void 0 ? void 0 : product.getDataValue("promotion"));
-        product === null || product === void 0 ? void 0 : product.setDataValue("promotion", promotion);
-        res.status(200).json(product);
+        if (id_product == "daily") {
+            let product = yield exports.dailyProduct();
+            res.status(200).json(product);
+        }
+        else {
+            // Searching the product
+            const product = yield Product_1.default.findByPk(id_product);
+            if (!product)
+                res.status(404).json({ msg: `Producto no encontrado` });
+            // Looking for a promotion
+            const promotion = yield checkPromos(product === null || product === void 0 ? void 0 : product.getDataValue("promotion"));
+            product === null || product === void 0 ? void 0 : product.setDataValue("promotion", promotion);
+            res.status(200).json(product);
+        }
     }
     catch (error) {
         res.status(500).json({
@@ -110,9 +117,11 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (!product)
             return res.status(404).json({ msg: `Producto no encontrado` });
         yield product.update(body);
-        let inventory = id_restaurant ? yield Inventory_1.default.findOne({
-            where: { product_id: id_product, restaurant_id: id_restaurant },
-        }) : null;
+        let inventory = id_restaurant
+            ? yield Inventory_1.default.findOne({
+                where: { product_id: id_product, restaurant_id: id_restaurant },
+            })
+            : null;
         if (inventory) {
             inventory === null || inventory === void 0 ? void 0 : inventory.setDataValue("units", body.units);
             inventory === null || inventory === void 0 ? void 0 : inventory.save();
@@ -204,9 +213,14 @@ const searchByRestaurant = (req, res) => __awaiter(void 0, void 0, void 0, funct
             let promotion = yield checkPromos(product.getDataValue("promotion"));
             product.setDataValue("promotion", promotion);
             let inventory = yield Inventory_1.default.findOne({
-                where: { product_id: product.getDataValue("id"), restaurant_id: id_restaurant },
+                where: {
+                    product_id: product.getDataValue("id"),
+                    restaurant_id: id_restaurant,
+                },
             });
-            product.dataValues.units = inventory ? inventory.getDataValue("units") : 0;
+            product.dataValues.units = inventory
+                ? inventory.getDataValue("units")
+                : 0;
         }
         res.status(200).json({ products });
     }
@@ -231,9 +245,14 @@ const searchByRestaurantCategory = (req, res) => __awaiter(void 0, void 0, void 
             let promotion = yield checkPromos(product.getDataValue("promotion"));
             product.setDataValue("promotion", promotion);
             let inventory = yield Inventory_1.default.findOne({
-                where: { product_id: product.getDataValue("id"), restaurant_id: id_restaurant },
+                where: {
+                    product_id: product.getDataValue("id"),
+                    restaurant_id: id_restaurant,
+                },
             });
-            product.dataValues.units = inventory ? inventory.getDataValue("units") : 0;
+            product.dataValues.units = inventory
+                ? inventory.getDataValue("units")
+                : 0;
         }
         res.status(200).json(products);
     }
@@ -245,6 +264,14 @@ const searchByRestaurantCategory = (req, res) => __awaiter(void 0, void 0, void 
     }
 });
 exports.searchByRestaurantCategory = searchByRestaurantCategory;
+const dailyProduct = () => __awaiter(void 0, void 0, void 0, function* () {
+    let product = yield Product_1.default.findOne({ order: connection_1.db.random() });
+    // Looking for a promotion
+    const promotion = yield checkPromos(product === null || product === void 0 ? void 0 : product.getDataValue("promotion"));
+    product === null || product === void 0 ? void 0 : product.setDataValue("promotion", promotion);
+    return product;
+});
+exports.dailyProduct = dailyProduct;
 const checkPromos = (id) => __awaiter(void 0, void 0, void 0, function* () {
     if (id == null)
         return null;

@@ -6,6 +6,7 @@ import Product from "../models/Product";
 import Category from "../models/Category";
 import Inventory from "../models/Inventory";
 import Restaurant from "../models/Restaurant";
+import { db } from "../database/connection";
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
@@ -38,15 +39,20 @@ export const createProduct = async (req: Request, res: Response) => {
 
 // User route, don't show units
 export const readProduct = async (req: Request, res: Response) => {
+  const { id_product } = req.params;
   try {
-    const { id_product } = req.params;
-    // Searching the product
-    const product = await Product.findByPk(id_product);
-    if (!product) res.status(404).json({ msg: `Producto no encontrado` });
-    // Looking for a promotion
-    const promotion = await checkPromos(product?.getDataValue("promotion"));
-    product?.setDataValue("promotion", promotion);
-    res.status(200).json(product);
+    if (id_product == "daily") {
+      let product = await dailyProduct();
+      res.status(200).json(product);
+    } else {
+      // Searching the product
+      const product = await Product.findByPk(id_product);
+      if (!product) res.status(404).json({ msg: `Producto no encontrado` });
+      // Looking for a promotion
+      const promotion = await checkPromos(product?.getDataValue("promotion"));
+      product?.setDataValue("promotion", promotion);
+      res.status(200).json(product);
+    }
   } catch (error) {
     res.status(500).json({
       msg: "Comunicarse con Matteo",
@@ -92,9 +98,11 @@ export const updateProduct = async (req: Request, res: Response) => {
     if (!product)
       return res.status(404).json({ msg: `Producto no encontrado` });
     await product.update(body);
-    let inventory = id_restaurant? await Inventory.findOne({
-      where: { product_id: id_product, restaurant_id: id_restaurant },
-    }) : null;
+    let inventory = id_restaurant
+      ? await Inventory.findOne({
+          where: { product_id: id_product, restaurant_id: id_restaurant },
+        })
+      : null;
     if (inventory) {
       inventory?.setDataValue("units", body.units);
       inventory?.save();
@@ -186,9 +194,14 @@ export const searchByRestaurant = async (req: Request, res: Response) => {
       let promotion = await checkPromos(product.getDataValue("promotion"));
       product.setDataValue("promotion", promotion);
       let inventory = await Inventory.findOne({
-        where: { product_id: product.getDataValue("id"), restaurant_id: id_restaurant },
+        where: {
+          product_id: product.getDataValue("id"),
+          restaurant_id: id_restaurant,
+        },
       });
-      product.dataValues.units = inventory? inventory.getDataValue("units") : 0;
+      product.dataValues.units = inventory
+        ? inventory.getDataValue("units")
+        : 0;
     }
     res.status(200).json({ products });
   } catch (error) {
@@ -199,7 +212,10 @@ export const searchByRestaurant = async (req: Request, res: Response) => {
   }
 };
 
-export const searchByRestaurantCategory = async (req: Request, res: Response) => {
+export const searchByRestaurantCategory = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { id_restaurant, id_category } = req.params;
     const products: any = await Product.findAll({
@@ -212,9 +228,14 @@ export const searchByRestaurantCategory = async (req: Request, res: Response) =>
       let promotion = await checkPromos(product.getDataValue("promotion"));
       product.setDataValue("promotion", promotion);
       let inventory = await Inventory.findOne({
-        where: { product_id: product.getDataValue("id"), restaurant_id: id_restaurant },
+        where: {
+          product_id: product.getDataValue("id"),
+          restaurant_id: id_restaurant,
+        },
       });
-      product.dataValues.units = inventory? inventory.getDataValue("units") : 0;
+      product.dataValues.units = inventory
+        ? inventory.getDataValue("units")
+        : 0;
     }
     res.status(200).json(products);
   } catch (error) {
@@ -223,6 +244,14 @@ export const searchByRestaurantCategory = async (req: Request, res: Response) =>
       error,
     });
   }
+};
+
+export const dailyProduct = async (): Promise<any> => {
+  let product: any = await Product.findOne({ order: db.random() });
+  // Looking for a promotion
+  const promotion = await checkPromos(product?.getDataValue("promotion"));
+  product?.setDataValue("promotion", promotion);
+  return product;
 };
 
 const checkPromos = async (id: number): Promise<any> => {

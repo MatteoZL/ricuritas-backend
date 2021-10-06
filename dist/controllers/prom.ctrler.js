@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.allPromotions = exports.deletePromotion = exports.updatePromotion = exports.readPromotion = exports.createPromotion = void 0;
 const Promotion_1 = __importDefault(require("../models/Promotion"));
+const Product_1 = __importDefault(require("../models/Product"));
 const createPromotion = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { start_date, end_date, title, discount } = req.body;
@@ -94,6 +95,11 @@ exports.deletePromotion = deletePromotion;
 const allPromotions = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const promotions = yield Promotion_1.default.findAll({ order: ["end_date"] });
+        for (let promotion of promotions) {
+            let products = yield Product_1.default.findAll({ where: { promotion: promotion.getDataValue("id") } });
+            promotion.dataValues.products = products;
+        }
+        ;
         res.json({ promotions });
     }
     catch (error) {

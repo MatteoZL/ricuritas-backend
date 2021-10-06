@@ -8,5 +8,6 @@ router.use(verifyToken_1.TokenValidation);
 router.route("/").post(ord_ctrler_1.createOrder).get(ord_ctrler_1.allOrders);
 router.route("/:id").get(ord_ctrler_1.readOrder);
 router.get("/restaurant/:id", ord_ctrler_1.searchByRestaurant);
+router.get("/client/:id", ord_ctrler_1.searchByClient);
 exports.default = router;
 //# sourceMappingURL=ord.routes.js.map
