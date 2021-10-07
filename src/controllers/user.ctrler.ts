@@ -7,6 +7,8 @@ import {
   deleteLocation,
 } from "./loc.ctrler";
 import { encryptPassword } from "../libs/bcrypt";
+import { db } from "../database/connection";
+import { createBirthdaysPDF } from "../libs/pdf-creator";
 
 export const createUser = async (data: any) => {
   try {
@@ -20,7 +22,7 @@ export const createUser = async (data: any) => {
     // Saving new User
     const user = await User.create(data);
     return user;
-  } catch (error) {
+  } catch (error: any) {
     // Delete the previously created location
     await deleteLocation(data.location_id);
     // Error handling
@@ -40,7 +42,7 @@ export const createUser = async (data: any) => {
 
 export const readUser = async (req: Request, res: Response) => {
   try {
-    const id = req.userId;
+    const id = req.params.id? req.params.id : req.userId;
     const user: any = await User.findByPk(id);
     const location: any = await readLocation(user?.getDataValue("location_id"));
     !user
@@ -58,7 +60,7 @@ export const readUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const id = req.userId;
+    const id = req.params.id? req.params.id : req.userId;
     const { body } = req;
     const user: any = await User.findByPk(id);
     if (!user)
@@ -85,7 +87,7 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const id = req.userId;
+    const id = req.params.id? req.params.id : req.userId;
     // Logical deletion
     await User.update({ available: false }, { where: { doc_num: id } });
     res.status(200).json({ msg: "Borrado exitoso" });
@@ -105,6 +107,25 @@ export const allUsers = async (req: Request, res: Response) => {
       user.dataValues.location = location;
     }
     res.status(200).json({users});
+  } catch (error) {
+    res.status(500).json({
+      msg: "Comunicarse con Matteo",
+      error,
+    });
+  }
+};
+
+export const upcomingBDs = async (req: Request, res: Response) => {
+  let currentDate = new Date();
+  let currentMonth = currentDate.getMonth();
+  try {
+    const users: any= await db.query(`SELECT * FROM "user" WHERE EXTRACT(MONTH FROM birth) > ${currentMonth}`);
+    console.log(users[0]);
+    
+    const doc = await createBirthdaysPDF(users[0]);
+    console.log(doc);
+    
+    res.status(200).json({doc});
   } catch (error) {
     res.status(500).json({
       msg: "Comunicarse con Matteo",

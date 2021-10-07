@@ -25,7 +25,6 @@ const uploadImage = (file) => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield cloudinary_1.default.v2.uploader.upload(file, {
             folder: "ricuritas",
         });
-        console.log(res);
         return res.secure_url;
     }
     catch (error) {

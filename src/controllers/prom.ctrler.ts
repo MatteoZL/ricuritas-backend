@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Promotion from "../models/Promotion";
+import Product from "../models/Product";
 
 export const createPromotion = async (req: Request, res: Response) => {
   try {
@@ -76,7 +77,11 @@ export const deletePromotion = async (req: Request, res: Response) => {
 
 export const allPromotions = async (req: Request, res: Response) => {
   try {
-    const promotions = await Promotion.findAll({ order: ["end_date"] });
+    const promotions: any = await Promotion.findAll({ order: ["end_date"] });
+    for(let promotion of promotions) {
+      let products = await Product.findAll({ where: { promotion: promotion.getDataValue("id") } });
+      promotion.dataValues.products = products;
+    };
     res.json({ promotions });
   } catch (error) {
     res.status(500).json({

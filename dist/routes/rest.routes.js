@@ -11,5 +11,7 @@ router
     .get(rest_ctrler_1.readRestaurant)
     .put(rest_ctrler_1.updateRestaurant)
     .delete(rest_ctrler_1.deleteRestaurant);
+router.get("/best/selling", rest_ctrler_1.bestSelling);
+router.get("/worst/selling", rest_ctrler_1.worstSelling);
 exports.default = router;
 //# sourceMappingURL=rest.routes.js.map
