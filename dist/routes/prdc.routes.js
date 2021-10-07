@@ -19,5 +19,7 @@ router
     .delete(verifyToken_1.AdminValidation, prdc_ctrler_1.deleteProduct);
 router.get("/restaurant/:id_restaurant/category/:id_category", prdc_ctrler_1.searchByRestaurantCategory);
 router.get("/daily", prdc_ctrler_1.dailyProduct);
+router.get("/top-selling/:number", verifyToken_1.AdminValidation, prdc_ctrler_1.topSellings);
+router.get("/less-selling/:number", verifyToken_1.AdminValidation, prdc_ctrler_1.lessSellings);
 exports.default = router;
 //# sourceMappingURL=prdc.routes.js.map

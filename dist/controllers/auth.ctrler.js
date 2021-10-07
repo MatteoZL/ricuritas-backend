@@ -21,6 +21,13 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Saving new User
         const { body } = req;
+        let dateNow = new Date();
+        if (body.birth > dateNow)
+            res
+                .status(400)
+                .json({
+                msg: "La fecha de nacimiento no puede ser posterior a la fecha actual",
+            });
         const user = yield user_ctrler_1.createUser(body);
         // Token
         const token = jsonwebtoken_1.default.sign({ id: user.doc_num, role: user.role }, process.env.TOKEN_SECRET || "token-test");

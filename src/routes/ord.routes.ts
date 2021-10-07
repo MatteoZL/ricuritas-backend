@@ -4,6 +4,8 @@ import {
   allOrders,
   createOrder,
   readOrder,
+  salesByDate,
+  salesByMonth,
   searchByClient,
   searchByRestaurant,
 } from "../controllers/ord.ctrler";
@@ -19,5 +21,9 @@ router.route("/:id").get(readOrder);
 router.get("/restaurant/:id", searchByRestaurant);
 
 router.get("/client/:id", searchByClient);
+
+router.get("/sales/:start/:end", salesByDate);
+
+router.get("/monthly-sales/:id_product", salesByMonth);
 
 export default router;

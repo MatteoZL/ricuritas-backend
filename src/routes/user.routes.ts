@@ -4,6 +4,7 @@ import {
   updateUser,
   deleteUser,
   allUsers,
+  upcomingBDs,
 } from "../controllers/user.ctrler";
 import { AdminValidation, TokenValidation } from "../libs/verifyToken";
 
@@ -20,5 +21,7 @@ router
   .delete(AdminValidation, deleteUser);
 
 router.get("/allUsers", allUsers);
+
+router.get("/upcoming-birthdays", upcomingBDs);
 
 export default router;

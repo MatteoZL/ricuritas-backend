@@ -14,13 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.readPayment = exports.createPayment = void 0;
 const Payment_1 = __importDefault(require("../models/Payment"));
-const pdf_creator_1 = __importDefault(require("../libs/pdf-creator"));
+const pdf_creator_1 = require("../libs/pdf-creator");
 const createPayment = (data) => __awaiter(void 0, void 0, void 0, function* () {
     if (data.method == "efectivo")
         return yield Payment_1.default.create(data);
     data.apvl_num = Math.floor(Math.random() * 100);
     data.apvl_date = new Date();
-    data.receipt = yield pdf_creator_1.default(data);
+    data.receipt = yield pdf_creator_1.createOrderPDF(data);
     const payment = yield Payment_1.default.create(data);
     return payment;
 });

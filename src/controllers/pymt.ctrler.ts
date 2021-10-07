@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import Payment from "../models/Payment";
-import createPDF from "../libs/pdf-creator";
+import { createOrderPDF } from "../libs/pdf-creator";
 
 export const createPayment = async (data: any) => {
   if (data.method == "efectivo") return await Payment.create(data);
   data.apvl_num = Math.floor(Math.random() * 100);
   data.apvl_date = new Date();
-  data.receipt = await createPDF(data);
+  data.receipt = await createOrderPDF(data);
   const payment = await Payment.create(data);
   return payment;
 };

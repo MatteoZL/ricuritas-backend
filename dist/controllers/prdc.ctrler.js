@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.dailyProduct = exports.searchByRestaurantCategory = exports.searchByRestaurant = exports.searchByCategory = exports.allProducts = exports.deleteProduct = exports.updateProduct = exports.readProductByRestaurant = exports.readProduct = exports.createProduct = void 0;
+exports.lessSellings = exports.topSellings = exports.dailyProduct = exports.searchByRestaurantCategory = exports.searchByRestaurant = exports.searchByCategory = exports.allProducts = exports.deleteProduct = exports.updateProduct = exports.readProductByRestaurant = exports.readProduct = exports.createProduct = void 0;
 const Promotion_1 = __importDefault(require("../models/Promotion"));
 const cloudinary_1 = require("../libs/cloudinary");
 const Product_1 = __importDefault(require("../models/Product"));
@@ -20,6 +20,8 @@ const Category_1 = __importDefault(require("../models/Category"));
 const Inventory_1 = __importDefault(require("../models/Inventory"));
 const Restaurant_1 = __importDefault(require("../models/Restaurant"));
 const connection_1 = require("../database/connection");
+const Sales_1 = __importDefault(require("../models/Sales"));
+const sequelize_1 = require("sequelize");
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { body, files } = req;
@@ -272,6 +274,64 @@ const dailyProduct = () => __awaiter(void 0, void 0, void 0, function* () {
     return product;
 });
 exports.dailyProduct = dailyProduct;
+const topSellings = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { number } = req.params;
+    try {
+        let statistics = yield Sales_1.default.findAll({
+            attributes: [
+                [sequelize_1.Sequelize.fn("sum", sequelize_1.Sequelize.col("total")), "total"],
+                "product_id",
+            ],
+            group: ["product_id"],
+            order: sequelize_1.Sequelize.literal("total DESC"),
+            limit: number,
+        });
+        let totals = [];
+        let products = [];
+        for (let statistic of statistics) {
+            totals.push(statistic.getDataValue("total"));
+            let product = yield Product_1.default.findByPk(statistic.getDataValue("product_id"));
+            products.push(product === null || product === void 0 ? void 0 : product.getDataValue("name"));
+        }
+        res.json({ products, totals });
+    }
+    catch (error) {
+        res.status(500).json({
+            msg: "Comunicarse con Matteo",
+            error,
+        });
+    }
+});
+exports.topSellings = topSellings;
+const lessSellings = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { number } = req.params;
+    try {
+        let statistics = yield Sales_1.default.findAll({
+            attributes: [
+                [sequelize_1.Sequelize.fn("sum", sequelize_1.Sequelize.col("total")), "total"],
+                "product_id",
+            ],
+            group: ["product_id"],
+            order: sequelize_1.Sequelize.literal("total ASC"),
+            limit: number,
+        });
+        let totals = [];
+        let products = [];
+        for (let statistic of statistics) {
+            totals.push(statistic.getDataValue("total"));
+            let product = yield Product_1.default.findByPk(statistic.getDataValue("product_id"));
+            products.push(product === null || product === void 0 ? void 0 : product.getDataValue("name"));
+        }
+        res.json({ products, totals });
+    }
+    catch (error) {
+        res.status(500).json({
+            msg: "Comunicarse con Matteo",
+            error,
+        });
+    }
+});
+exports.lessSellings = lessSellings;
 const checkPromos = (id) => __awaiter(void 0, void 0, void 0, function* () {
     if (id == null)
         return null;

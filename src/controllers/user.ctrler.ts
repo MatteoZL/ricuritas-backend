@@ -7,6 +7,8 @@ import {
   deleteLocation,
 } from "./loc.ctrler";
 import { encryptPassword } from "../libs/bcrypt";
+import { db } from "../database/connection";
+import { createBirthdaysPDF } from "../libs/pdf-creator";
 
 export const createUser = async (data: any) => {
   try {
@@ -105,6 +107,25 @@ export const allUsers = async (req: Request, res: Response) => {
       user.dataValues.location = location;
     }
     res.status(200).json({users});
+  } catch (error) {
+    res.status(500).json({
+      msg: "Comunicarse con Matteo",
+      error,
+    });
+  }
+};
+
+export const upcomingBDs = async (req: Request, res: Response) => {
+  let currentDate = new Date();
+  let currentMonth = currentDate.getMonth();
+  try {
+    const users: any= await db.query(`SELECT * FROM "user" WHERE EXTRACT(MONTH FROM birth) > ${currentMonth}`);
+    console.log(users[0]);
+    
+    const doc = await createBirthdaysPDF(users[0]);
+    console.log(doc);
+    
+    res.status(200).json({doc});
   } catch (error) {
     res.status(500).json({
       msg: "Comunicarse con Matteo",

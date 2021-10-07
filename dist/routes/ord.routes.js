@@ -9,5 +9,7 @@ router.route("/").post(ord_ctrler_1.createOrder).get(ord_ctrler_1.allOrders);
 router.route("/:id").get(ord_ctrler_1.readOrder);
 router.get("/restaurant/:id", ord_ctrler_1.searchByRestaurant);
 router.get("/client/:id", ord_ctrler_1.searchByClient);
+router.get("/sales/:start/:end", ord_ctrler_1.salesByDate);
+router.get("/monthly-sales/:id_product", ord_ctrler_1.salesByMonth);
 exports.default = router;
 //# sourceMappingURL=ord.routes.js.map

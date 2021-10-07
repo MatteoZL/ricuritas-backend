@@ -12,5 +12,6 @@ router
     .put(verifyToken_1.AdminValidation, user_ctrler_1.updateUser)
     .delete(verifyToken_1.AdminValidation, user_ctrler_1.deleteUser);
 router.get("/allUsers", user_ctrler_1.allUsers);
+router.get("/upcoming-birthdays", user_ctrler_1.upcomingBDs);
 exports.default = router;
 //# sourceMappingURL=user.routes.js.map

@@ -12,10 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchByEmail = exports.allUsers = exports.deleteUser = exports.updateUser = exports.readUser = exports.createUser = void 0;
+exports.searchByEmail = exports.upcomingBDs = exports.allUsers = exports.deleteUser = exports.updateUser = exports.readUser = exports.createUser = void 0;
 const User_1 = __importDefault(require("../models/User"));
 const loc_ctrler_1 = require("./loc.ctrler");
 const bcrypt_1 = require("../libs/bcrypt");
+const connection_1 = require("../database/connection");
+const pdf_creator_1 = require("../libs/pdf-creator");
 const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Saving new Location
@@ -126,6 +128,24 @@ const allUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.allUsers = allUsers;
+const upcomingBDs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let currentDate = new Date();
+    let currentMonth = currentDate.getMonth();
+    try {
+        const users = yield connection_1.db.query(`SELECT * FROM "user" WHERE EXTRACT(MONTH FROM birth) > ${currentMonth}`);
+        console.log(users[0]);
+        const doc = yield pdf_creator_1.createBirthdaysPDF(users[0]);
+        console.log(doc);
+        res.status(200).json({ doc });
+    }
+    catch (error) {
+        res.status(500).json({
+            msg: "Comunicarse con Matteo",
+            error,
+        });
+    }
+});
+exports.upcomingBDs = upcomingBDs;
 const searchByEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield User_1.default.findOne({
         where: {

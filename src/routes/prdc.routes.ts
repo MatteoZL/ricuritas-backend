@@ -9,6 +9,8 @@ import {
   readProductByRestaurant,
   searchByRestaurantCategory,
   dailyProduct,
+  topSellings,
+  lessSellings,
 } from "../controllers/prdc.ctrler";
 import { Router } from "express";
 import { AdminValidation } from "../libs/verifyToken";
@@ -38,6 +40,10 @@ router.get(
   searchByRestaurantCategory
 );
 
-router.get("/daily", dailyProduct)
+router.get("/daily", dailyProduct);
+
+router.get("/top-selling/:number", AdminValidation, topSellings);
+
+router.get("/less-selling/:number", AdminValidation, lessSellings);
 
 export default router;

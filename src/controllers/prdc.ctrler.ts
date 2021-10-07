@@ -7,6 +7,8 @@ import Category from "../models/Category";
 import Inventory from "../models/Inventory";
 import Restaurant from "../models/Restaurant";
 import { db } from "../database/connection";
+import Sale from "../models/Sales";
+import { Sequelize } from "sequelize";
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
@@ -252,6 +254,72 @@ export const dailyProduct = async (): Promise<any> => {
   const promotion = await checkPromos(product?.getDataValue("promotion"));
   product?.setDataValue("promotion", promotion);
   return product;
+};
+
+export const topSellings = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const { number }: any = req.params;
+  try {
+    let statistics = await Sale.findAll({
+      attributes: [
+        [Sequelize.fn("sum", Sequelize.col("total")), "total"],
+        "product_id",
+      ],
+      group: ["product_id"],
+      order: Sequelize.literal("total DESC"),
+      limit: number,
+    });
+    let totals = [];
+    let products = [];
+    for (let statistic of statistics) {
+      totals.push(statistic.getDataValue("total"));
+      let product = await Product.findByPk(
+        statistic.getDataValue("product_id")
+      );
+      products.push(product?.getDataValue("name"));
+    }
+    res.json({ products, totals });
+  } catch (error) {
+    res.status(500).json({
+      msg: "Comunicarse con Matteo",
+      error,
+    });
+  }
+};
+
+export const lessSellings = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const { number }: any = req.params;
+  try {
+    let statistics = await Sale.findAll({
+      attributes: [
+        [Sequelize.fn("sum", Sequelize.col("total")), "total"],
+        "product_id",
+      ],
+      group: ["product_id"],
+      order: Sequelize.literal("total ASC"),
+      limit: number,
+    });
+    let totals = [];
+    let products = [];
+    for (let statistic of statistics) {
+      totals.push(statistic.getDataValue("total"));
+      let product = await Product.findByPk(
+        statistic.getDataValue("product_id")
+      );
+      products.push(product?.getDataValue("name"));
+    }
+    res.json({ products, totals });
+  } catch (error) {
+    res.status(500).json({
+      msg: "Comunicarse con Matteo",
+      error,
+    });
+  }
 };
 
 const checkPromos = async (id: number): Promise<any> => {

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <canvas id="myChart" width="400" height="400"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      var ctx = "myChart";
+      let products = ["pollo frito", "gaseosa"];
+      let totals = [12, 20];
+      var myChart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: products,
+          datasets: [
+            {
+              label: "Top ventas",
+              data: totals,
+              backgroundColor: [
+                "#800000",
+                "#9A6324",
+                "#808000",
+                "#469990",
+                "#000075",
+                "#000000",
+                "#e6194B",
+                "#f58231",
+                "#ffe119",
+                "#bfef45",
+                "#3cb44b",
+                "#42d4f4",
+                "#4363d8",
+                "#911eb4",
+                "#f032e6",
+                "#a9a9a9",
+                "#fabed4",
+                "#ffd8b1",
+                "#fffac8",
+                "#aaffc3",
+              ],
+              borderColor: [
+                "#800000",
+                "#9A6324",
+                "#808000",
+                "#469990",
+                "#000075",
+                "#000000",
+                "#e6194B",
+                "#f58231",
+                "#ffe119",
+                "#bfef45",
+                "#3cb44b",
+                "#42d4f4",
+                "#4363d8",
+                "#911eb4",
+                "#f032e6",
+                "#a9a9a9",
+                "#fabed4",
+                "#ffd8b1",
+                "#fffac8",
+                "#aaffc3",
+              ],
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -12,10 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.allRestaurants = exports.deleteRestaurant = exports.updateRestaurant = exports.readRestaurant = exports.createRestaurant = void 0;
+exports.worstSelling = exports.bestSelling = exports.allRestaurants = exports.deleteRestaurant = exports.updateRestaurant = exports.readRestaurant = exports.createRestaurant = void 0;
 const Restaurant_1 = __importDefault(require("../models/Restaurant"));
 const loc_ctrler_1 = require("../controllers/loc.ctrler");
 const sequelize_1 = require("sequelize");
+const Sales_1 = __importDefault(require("../models/Sales"));
+const sequelize_2 = require("sequelize");
 const createRestaurant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { body } = req;
@@ -130,4 +132,58 @@ const allRestaurants = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.allRestaurants = allRestaurants;
+const bestSelling = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let statistics = yield Sales_1.default.findAll({
+            attributes: [
+                [sequelize_2.Sequelize.fn("sum", sequelize_2.Sequelize.col("total")), "total"],
+                "restaurant_id",
+            ],
+            group: ["restaurant_id"],
+            order: sequelize_2.Sequelize.literal("total DESC"),
+        });
+        let totals = [];
+        let restaurants = [];
+        for (let statistic of statistics) {
+            totals.push(statistic.getDataValue("total"));
+            let product = yield Restaurant_1.default.findByPk(statistic.getDataValue("restaurant_id"));
+            restaurants.push(product === null || product === void 0 ? void 0 : product.getDataValue("site"));
+        }
+        res.json({ restaurants, totals });
+    }
+    catch (error) {
+        res.status(500).json({
+            msg: "Comunicarse con Matteo",
+            error,
+        });
+    }
+});
+exports.bestSelling = bestSelling;
+const worstSelling = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let statistics = yield Sales_1.default.findAll({
+            attributes: [
+                [sequelize_2.Sequelize.fn("sum", sequelize_2.Sequelize.col("total")), "total"],
+                "restaurant_id",
+            ],
+            group: ["restaurant_id"],
+            order: sequelize_2.Sequelize.literal("total ASC"),
+        });
+        let totals = [];
+        let restaurants = [];
+        for (let statistic of statistics) {
+            totals.push(statistic.getDataValue("total"));
+            let product = yield Restaurant_1.default.findByPk(statistic.getDataValue("restaurant_id"));
+            restaurants.push(product === null || product === void 0 ? void 0 : product.getDataValue("site"));
+        }
+        res.json({ restaurants, totals });
+    }
+    catch (error) {
+        res.status(500).json({
+            msg: "Comunicarse con Matteo",
+            error,
+        });
+    }
+});
+exports.worstSelling = worstSelling;
 //# sourceMappingURL=rest.ctrler.js.map

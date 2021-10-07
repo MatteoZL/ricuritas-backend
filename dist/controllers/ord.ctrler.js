@@ -12,12 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchByClient = exports.searchByRestaurant = exports.allOrders = exports.readOrder = exports.createOrder = void 0;
+exports.salesByMonth = exports.salesByDate = exports.searchByClient = exports.searchByRestaurant = exports.allOrders = exports.readOrder = exports.createOrder = void 0;
 const Order_1 = __importDefault(require("../models/Order"));
 const pymt_ctrler_1 = require("../controllers/pymt.ctrler");
 const Inventory_1 = __importDefault(require("../models/Inventory"));
 const Restaurant_1 = __importDefault(require("../models/Restaurant"));
 const Sales_1 = __importDefault(require("../models/Sales"));
+const connection_1 = require("../database/connection");
+const sequelize_1 = require("sequelize");
+const lodash_1 = __importDefault(require("lodash"));
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { body } = req;
@@ -36,11 +39,6 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             }
             else {
                 body.date_time = new Date();
-                const order = yield Order_1.default.create(body);
-                body.order_id = order.getDataValue("id");
-                const restaurant = yield Restaurant_1.default.findByPk(body.restaurant_id);
-                body.restaurant_name = restaurant === null || restaurant === void 0 ? void 0 : restaurant.getDataValue("site");
-                const payment = yield pymt_ctrler_1.createPayment(body);
                 Inventory_1.default.increment("units", {
                     by: -1 * product.quantity,
                     where: { product_id: product.id, restaurant_id: body.restaurant_id },
@@ -50,16 +48,21 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     quantity: product.quantity,
                     total: product.amount,
                     restaurant_id: body.restaurant_id,
-                    date_time: body.date_time
+                    date_time: body.date_time,
                 };
                 yield Sales_1.default.create(sale);
-                res.status(200).json({
-                    msg: "Orden creada exitosamente",
-                    order,
-                    payment,
-                });
             }
         }
+        const order = yield Order_1.default.create(body);
+        body.order_id = order.getDataValue("id");
+        const restaurant = yield Restaurant_1.default.findByPk(body.restaurant_id);
+        body.restaurant_name = restaurant === null || restaurant === void 0 ? void 0 : restaurant.getDataValue("site");
+        const payment = yield pymt_ctrler_1.createPayment(body);
+        res.status(200).json({
+            msg: "Orden creada exitosamente",
+            order,
+            payment,
+        });
     }
     catch (error) {
         res.status(500).json({
@@ -142,4 +145,54 @@ const searchByClient = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.searchByClient = searchByClient;
+const salesByDate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { start, end } = req.params;
+    try {
+        const dates_db = yield connection_1.db.query(`SELECT CAST(date_time AS DATE), total FROM "order" WHERE date_time >= '${start}' and date_time < '${end}' GROUP BY id`, { type: sequelize_1.QueryTypes.SELECT });
+        let dates = [];
+        let totals = [];
+        for (let date of dates_db) {
+            dates.push(date.date_time);
+            let currentDate = date.date_time;
+            let total = 0;
+            for (let eachDate of dates_db) {
+                if (eachDate.date_time == currentDate) {
+                    total += eachDate.total;
+                }
+            }
+            totals.push(total);
+        }
+        res.status(200).json({ dates: lodash_1.default.uniq(dates), totals: lodash_1.default.uniq(totals) });
+    }
+    catch (error) {
+        res.status(500).json({ msg: "Comunicarse con Matteo" });
+        console.log(error);
+    }
+});
+exports.salesByDate = salesByDate;
+const salesByMonth = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id_product } = req.params;
+    let dateNow = new Date();
+    let month = dateNow.getMonth() - 6;
+    dateNow.setMonth(month);
+    let validDate = dateNow.toLocaleDateString();
+    let orders = yield connection_1.db.query(`SELECT quantity, EXTRACT(MONTH FROM date_time) AS month FROM sale WHERE product_id = ${id_product} AND date_time >= '${validDate}'`, {
+        type: sequelize_1.QueryTypes.SELECT,
+    });
+    let months = [];
+    let quantities = [];
+    for (let order of orders) {
+        months.push(order.month);
+        let currentMonth = order.month;
+        let total = 0;
+        for (let eachMonth of orders) {
+            if (eachMonth.month == currentMonth) {
+                total += eachMonth.quantity;
+            }
+        }
+        quantities.push(total);
+    }
+    res.json({ months: lodash_1.default.uniq(months), quantities: lodash_1.default.uniq(quantities) });
+});
+exports.salesByMonth = salesByMonth;
 //# sourceMappingURL=ord.ctrler.js.map
